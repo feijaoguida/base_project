@@ -8,12 +8,8 @@ export class UserService {
     constructor(private prisma: PrismaService){}
 
     async create(dto:CreateUserDto){
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email: dto.email,
-            }
-        })
-
+        
+        const user = this.findByEmail(dto.email)
         if (user) throw new ConflictException('email duplicated')
 
         const newUser = await this.prisma.user.create({
@@ -25,7 +21,14 @@ export class UserService {
 
         const { password, ...result } = newUser;
         return result
+    }
 
-
+    async findByEmail(email: string){
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: email,
+            }
+        })
+        return user
     }
 }
