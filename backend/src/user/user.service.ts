@@ -9,7 +9,8 @@ export class UserService {
 
     async create(dto:CreateUserDto){
         
-        const user = this.findByEmail(dto.email)
+        const user = await this.findByEmail(dto.email)
+        console.log("user - ", user)
         if (user) throw new ConflictException('email duplicated')
 
         const newUser = await this.prisma.user.create({
