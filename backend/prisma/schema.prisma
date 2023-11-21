@@ -1,23 +1,41 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Company {
+  id         String    @id @default(uuid())
+  name       String
+  cnpj_cpf   String    @unique
+  status     Status    @default(Active)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+  users      User[]
+
+  @@map("companies")
 }
 
 model User {
-  id      Int     @id @default(autoincrement())
-  email   String  @unique
-  name    String?
-  password  String
+  id         String       @id @default(uuid())
+  companyId  String    @default(uuid())
+  email      String    @unique
+  name       String?
+  password   String
+  status     Status    @default(Active)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+  company    Company   @relation(fields: [companyId], references: [id])
+
+  @@map("users")
+}
+
+enum Status {
+  Active
+  Deactive
+  Delected
 }

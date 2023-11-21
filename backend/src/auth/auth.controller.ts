@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, Post, Request, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto/auth.dto';
@@ -12,13 +12,13 @@ export class AuthController {
     ){}
 
     @Post('register')
-    async registerUser(@Body() dto: CreateUserDto){
-        return await this.userService.create(dto)
+    async registerUser(@Body() dto: CreateUserDto, @Headers('companyId') companyId: string){
+        return await this.userService.create(dto, companyId) 
     }
 
     @Post('login')
-    async login(@Body() dto:LoginDto ){
-        return await this.authService.login(dto);
+    async login(@Body() dto:LoginDto, @Headers('companyId') companyId: string ){
+        return await this.authService.login(dto, companyId);
     }
 
     @UseGuards(RefreshJwtGuard)

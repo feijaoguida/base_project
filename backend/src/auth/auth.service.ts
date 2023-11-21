@@ -9,8 +9,8 @@ export class AuthService {
     constructor(private userService: UserService,
                 private jwtService: JwtService ) {}
 
-    async login(dto: LoginDto){
-        const user = await this.validateUser(dto);
+    async login(dto: LoginDto, companyId: string){
+        const user = await this.validateUser(dto, companyId);
 
         const payload = {
             username: user.email,
@@ -52,8 +52,8 @@ export class AuthService {
         }
     }
 
-    async validateUser(dto:LoginDto){
-        const user = await this.userService.findByEmail(dto.username)
+    async validateUser(dto:LoginDto, companyId: string){
+        const user = await this.userService.findByEmail(dto.username, companyId)
 
         if(user && (await compare(dto.password, user.password))) {
             const { password, ...result } = user;

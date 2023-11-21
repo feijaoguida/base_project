@@ -7,15 +7,14 @@ import { hash } from 'bcrypt'
 export class UserService {
     constructor(private prisma: PrismaService){}
 
-    async create(dto:CreateUserDto){
-        
-        const user = await this.findByEmail(dto.email)
-        console.log("user - ", user)
+    async create(dto:CreateUserDto, companyId: string){
+        const user = await this.findByEmail(dto.email, companyId)
         if (user) throw new ConflictException('email duplicated')
 
         const newUser = await this.prisma.user.create({
             data: {
                 ...dto,
+                companyId: companyId,
                 password: await hash(dto.password, 10)
             }
         })
@@ -24,20 +23,22 @@ export class UserService {
         return result
     }
 
-    async findByEmail(email: string){
+    async findByEmail(email: string, companyId: string){
         const user = await this.prisma.user.findUnique({
             where: {
-                email: email,
+                companyId: companyId,
+                email: email
             }
         })
         return user
     }
 
-    async findById(id: number){
+    async findById(id: string, companyId: string){
         const user = await this.prisma.user.findUnique({
             where: {
-                id: id,
-            }
+                companyId: companyId,
+                id: id
+            },
         })
         return user
     }
